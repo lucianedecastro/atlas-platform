@@ -15,13 +15,13 @@ O objetivo é preservar o conhecimento arquitetural do projeto ao longo de sua e
 | ADR | Título | Status |
 |------|--------|--------|
 | ADR-001 | Flyway como ferramenta oficial de migração | ✅ Aceita |
-| ADR-002 | PostgreSQL como banco oficial | ⏳ Planejada |
-| ADR-003 | UUID como chave primária | ⏳ Planejada |
-| ADR-004 | Mermaid como padrão de diagramas | ⏳ Planejada |
-| ADR-005 | Relacionamento como agregado principal | ⏳ Planejada |
-| ADR-006 | Score de Afinidade calculado por VIEW | ⏳ Planejada |
-| ADR-007 | Documentos armazenados fora do banco | ⏳ Planejada |
-| ADR-008 | Domain-Driven Design como abordagem arquitetural | ⏳ Planejada |
+| ADR-002 | PostgreSQL como banco oficial | ✅ Aceita |
+| ADR-003 | UUID como chave primária | ✅ Aceita |
+| ADR-004 | Mermaid como padrão de diagramas | ✅ Aceita |
+| ADR-005 | Relacionamento como agregado principal | ✅ Aceita (com atualização em 2026-06-28) |
+| ADR-006 | Score de Afinidade calculado por VIEW | ✅ Aceita |
+| ADR-007 | Documentos armazenados fora do banco | ✅ Aceita |
+| ADR-008 | Domain-Driven Design como abordagem arquitetural | ✅ Aceita |
 | ADR-009 | Docker como ambiente padrão de desenvolvimento | ⏳ Planejada |
 | ADR-010 | Camada de Storage desacoplada | ⏳ Planejada |
 

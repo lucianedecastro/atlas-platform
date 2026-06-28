@@ -10,7 +10,7 @@ CREATE TABLE projeto_interesse (
 
     criticidade SMALLINT NOT NULL DEFAULT 3,
 
-    CHECK (criticidade BETWEEN 1 AND 5)
+    CHECK (criticidade BETWEEN 1 AND 5),
 
     observacoes TEXT,
 
