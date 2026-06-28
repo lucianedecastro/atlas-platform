@@ -3,9 +3,9 @@ spring:
     name: atlas
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/atlas
-    username: atlas
-    password: atlas
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/atlas}
+    username: ${SPRING_DATASOURCE_USERNAME:atlas}
+    password: ${SPRING_DATASOURCE_PASSWORD:atlas}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -23,4 +23,4 @@ spring:
     baseline-on-migrate: true
 
 server:
-  port: 8080
+  port: ${PORT:8080}
