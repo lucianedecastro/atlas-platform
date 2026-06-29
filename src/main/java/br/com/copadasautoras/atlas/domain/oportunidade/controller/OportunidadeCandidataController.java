@@ -3,11 +3,13 @@ package br.com.copadasautoras.atlas.domain.oportunidade.controller;
 import br.com.copadasautoras.atlas.core.response.ApiResponse;
 import br.com.copadasautoras.atlas.domain.oportunidade.dto.request.AtualizarOportunidadeCandidataRequest;
 import br.com.copadasautoras.atlas.domain.oportunidade.dto.request.CriarOportunidadeCandidataRequest;
+import br.com.copadasautoras.atlas.domain.oportunidade.dto.request.PromoverOrganizacaoRequest;
 import br.com.copadasautoras.atlas.domain.oportunidade.dto.request.RejeitarOportunidadeCandidataRequest;
 import br.com.copadasautoras.atlas.domain.oportunidade.dto.response.OportunidadeCandidataResponse;
 import br.com.copadasautoras.atlas.domain.oportunidade.dto.response.OportunidadeResponse;
 import br.com.copadasautoras.atlas.domain.oportunidade.enums.StatusCandidata;
 import br.com.copadasautoras.atlas.domain.oportunidade.service.OportunidadeCandidataService;
+import br.com.copadasautoras.atlas.domain.organizacao.enums.TipoOrganizacao;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +53,19 @@ public class OportunidadeCandidataController {
             @RequestBody @Valid AtualizarOportunidadeCandidataRequest request) {
 
         return ApiResponse.success("Oportunidade candidata atualizada com sucesso.", service.atualizar(id, request));
+    }
+
+    @PostMapping("/{id}/promover-organizacao")
+    public ApiResponse<OportunidadeCandidataResponse> promoverOrganizacao(
+            @PathVariable UUID id,
+            @RequestBody(required = false) PromoverOrganizacaoRequest request) {
+
+        TipoOrganizacao tipo = request != null ? request.tipo() : null;
+
+        return ApiResponse.success(
+                "Organização criada e vinculada com sucesso.",
+                service.promoverParaOrganizacao(id, tipo)
+        );
     }
 
     @PostMapping("/{id}/aprovar")

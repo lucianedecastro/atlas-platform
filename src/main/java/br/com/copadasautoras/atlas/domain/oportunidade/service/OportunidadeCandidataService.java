@@ -3,7 +3,6 @@ package br.com.copadasautoras.atlas.domain.oportunidade.service;
 import br.com.copadasautoras.atlas.core.exception.RecursoNaoEncontradoException;
 import br.com.copadasautoras.atlas.domain.oportunidade.dto.request.AtualizarOportunidadeCandidataRequest;
 import br.com.copadasautoras.atlas.domain.oportunidade.dto.request.CriarOportunidadeCandidataRequest;
-import br.com.copadasautoras.atlas.domain.oportunidade.dto.request.RejeitarOportunidadeCandidataRequest;
 import br.com.copadasautoras.atlas.domain.oportunidade.dto.response.OportunidadeCandidataResponse;
 import br.com.copadasautoras.atlas.domain.oportunidade.dto.response.OportunidadeResponse;
 import br.com.copadasautoras.atlas.domain.oportunidade.entity.Oportunidade;
@@ -14,6 +13,7 @@ import br.com.copadasautoras.atlas.domain.oportunidade.mapper.OportunidadeMapper
 import br.com.copadasautoras.atlas.domain.oportunidade.repository.OportunidadeCandidataRepository;
 import br.com.copadasautoras.atlas.domain.oportunidade.repository.OportunidadeRepository;
 import br.com.copadasautoras.atlas.domain.organizacao.entity.Organizacao;
+import br.com.copadasautoras.atlas.domain.organizacao.enums.TipoOrganizacao;
 import br.com.copadasautoras.atlas.domain.organizacao.repository.OrganizacaoRepository;
 import br.com.copadasautoras.atlas.domain.projeto.entity.Projeto;
 import br.com.copadasautoras.atlas.domain.projeto.repository.ProjetoRepository;
@@ -89,6 +89,37 @@ public class OportunidadeCandidataService {
     }
 
     @Transactional
+    public OportunidadeCandidataResponse promoverParaOrganizacao(UUID id, TipoOrganizacao tipoPreferido) {
+
+        OportunidadeCandidata candidata = buscarEntidadePorId(id);
+
+        if (candidata.getStatus() != StatusCandidata.PENDENTE) {
+            throw new IllegalArgumentException("Esta candidata já foi avaliada anteriormente.");
+        }
+
+        if (candidata.getOrganizacao() != null) {
+            throw new IllegalArgumentException("Esta candidata já está vinculada a uma organização.");
+        }
+
+        String nomeSugerido = candidata.getOrganizacaoNomeSugerido();
+
+        if (nomeSugerido == null || nomeSugerido.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Esta candidata não tem nome de organização sugerido para promover."
+            );
+        }
+
+        Organizacao organizacao = organizacaoRepository.findByNomeContainingIgnoreCase(nomeSugerido).stream()
+                .filter(o -> o.getNome().equalsIgnoreCase(nomeSugerido))
+                .findFirst()
+                .orElseGet(() -> criarOrganizacaoAPartirDaSugestao(nomeSugerido, tipoPreferido));
+
+        candidata.setOrganizacao(organizacao);
+
+        return OportunidadeCandidataMapper.toResponse(repository.saveAndFlush(candidata));
+    }
+
+    @Transactional
     public OportunidadeResponse aprovar(UUID id) {
 
         OportunidadeCandidata candidata = buscarEntidadePorId(id);
@@ -130,7 +161,7 @@ public class OportunidadeCandidataService {
     }
 
     @Transactional
-    public OportunidadeCandidataResponse rejeitar(UUID id, RejeitarOportunidadeCandidataRequest request) {
+    public OportunidadeCandidataResponse rejeitar(UUID id, br.com.copadasautoras.atlas.domain.oportunidade.dto.request.RejeitarOportunidadeCandidataRequest request) {
 
         OportunidadeCandidata candidata = buscarEntidadePorId(id);
 
@@ -150,6 +181,17 @@ public class OportunidadeCandidataService {
     @Transactional
     public void excluir(UUID id) {
         repository.delete(buscarEntidadePorId(id));
+    }
+
+    private Organizacao criarOrganizacaoAPartirDaSugestao(String nome, TipoOrganizacao tipoPreferido) {
+
+        Organizacao nova = new Organizacao();
+        nova.setNome(nome);
+        nova.setTipo(tipoPreferido != null ? tipoPreferido : TipoOrganizacao.PATROCINADOR_POTENCIAL);
+        nova.setUtilizaLeiIncentivo(true);
+        nova.setPossuiInstituto(false);
+
+        return organizacaoRepository.saveAndFlush(nova);
     }
 
     private Relacionamento criarRelacionamento(OportunidadeCandidata candidata) {
