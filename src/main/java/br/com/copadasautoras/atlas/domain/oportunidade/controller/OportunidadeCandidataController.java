@@ -61,10 +61,11 @@ public class OportunidadeCandidataController {
             @RequestBody(required = false) PromoverOrganizacaoRequest request) {
 
         TipoOrganizacao tipo = request != null ? request.tipo() : null;
+        String estado = request != null ? request.estado() : null;
 
         return ApiResponse.success(
                 "Organização criada e vinculada com sucesso.",
-                service.promoverParaOrganizacao(id, tipo)
+                service.promoverParaOrganizacao(id, tipo, estado)
         );
     }
 

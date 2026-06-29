@@ -89,7 +89,7 @@ public class OportunidadeCandidataService {
     }
 
     @Transactional
-    public OportunidadeCandidataResponse promoverParaOrganizacao(UUID id, TipoOrganizacao tipoPreferido) {
+    public OportunidadeCandidataResponse promoverParaOrganizacao(UUID id, TipoOrganizacao tipoPreferido, String estado) {
 
         OportunidadeCandidata candidata = buscarEntidadePorId(id);
 
@@ -112,7 +112,13 @@ public class OportunidadeCandidataService {
         Organizacao organizacao = organizacaoRepository.findByNomeContainingIgnoreCase(nomeSugerido).stream()
                 .filter(o -> o.getNome().equalsIgnoreCase(nomeSugerido))
                 .findFirst()
-                .orElseGet(() -> criarOrganizacaoAPartirDaSugestao(nomeSugerido, tipoPreferido));
+                .orElseGet(() -> criarOrganizacaoAPartirDaSugestao(nomeSugerido, tipoPreferido, estado));
+
+        // Se a organização já existia mas não tinha estado (criada antes deste fix), atualiza agora
+        if (estado != null && organizacao.getEstado() == null) {
+            organizacao.setEstado(estado);
+            organizacaoRepository.saveAndFlush(organizacao);
+        }
 
         candidata.setOrganizacao(organizacao);
 
@@ -183,13 +189,14 @@ public class OportunidadeCandidataService {
         repository.delete(buscarEntidadePorId(id));
     }
 
-    private Organizacao criarOrganizacaoAPartirDaSugestao(String nome, TipoOrganizacao tipoPreferido) {
+    private Organizacao criarOrganizacaoAPartirDaSugestao(String nome, TipoOrganizacao tipoPreferido, String estado) {
 
         Organizacao nova = new Organizacao();
         nova.setNome(nome);
         nova.setTipo(tipoPreferido != null ? tipoPreferido : TipoOrganizacao.PATROCINADOR_POTENCIAL);
         nova.setUtilizaLeiIncentivo(true);
         nova.setPossuiInstituto(false);
+        nova.setEstado(estado);
 
         return organizacaoRepository.saveAndFlush(nova);
     }

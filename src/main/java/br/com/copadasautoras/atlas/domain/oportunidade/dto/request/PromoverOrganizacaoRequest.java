@@ -4,7 +4,9 @@ import br.com.copadasautoras.atlas.domain.organizacao.enums.TipoOrganizacao;
 
 public record PromoverOrganizacaoRequest(
 
-        TipoOrganizacao tipo
+        TipoOrganizacao tipo,
+
+        String estado
 
 ) {
 }
