@@ -15,4 +15,6 @@ public interface OportunidadeCandidataRepository extends JpaRepository<Oportunid
 
     List<OportunidadeCandidata> findByProjetoId(UUID projetoId);
 
+    boolean existsByProjetoIdAndOrganizacaoNomeSugerido(UUID projetoId, String organizacaoNomeSugerido);
+
 }
